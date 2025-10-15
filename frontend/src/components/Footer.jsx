@@ -25,7 +25,7 @@ const Footer = () => {
             <li className="hover:text-white cursor-pointer" onClick={() => navigate("/allcourses")}>Courses</li>
             <li className="hover:text-white cursor-pointer" onClick={() => navigate("/login")}>Login</li>
             <li className="hover:text-white cursor-pointer" onClick={() => navigate("/profile")}>My Profile</li>
-            <li className="hover:text-white cursor-pointer" onClick={() => navigate("/resume")}>Resume Builder</li>
+            <li className="hover:text-white cursor-pointer" onClick={() => navigate("resume")}>Resume Builder</li>
           </ul>
         </div>
 
