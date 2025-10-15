@@ -27,6 +27,27 @@ function ViewCourse() {
    const [isEnrolled, setIsEnrolled] = useState(false);
    const [rating, setRating] = useState(0);
    const [comment, setComment] = useState("");
+   const [submissionLinks, setSubmissionLinks] = useState({});
+
+
+  const handleAssignmentSubmit = async (assignmentId) => {
+    try {
+        const submissionLink = submissionLinks[assignmentId];
+        if (!submissionLink) {
+            toast.error("Please provide a submission link.");
+            return;
+        }
+        const { data } = await axios.post(
+            `${serverUrl}/api/submission/submit`,
+            { assignmentId, submissionLink },
+            { withCredentials: true }
+        );
+        toast.success(data.message);
+    } catch (error) {
+        toast.error(error.response.data.message);
+    }
+};
+
    
    
   
@@ -249,6 +270,33 @@ setIsEnrolled(true)
             Beginners, aspiring developers, and professionals looking to upgrade skills.
           </p>
         </div>
+
+        {isEnrolled && (
+    <div>
+        <h2 className="text-xl font-semibold mb-2">Assignments</h2>
+        {selectedCourseData?.assignments?.map((assignment) => (
+            <div key={assignment._id} className="border p-4 rounded-lg mb-4">
+                <h3 className="text-lg font-semibold">{assignment.title}</h3>
+                <p className="text-gray-600">{assignment.description}</p>
+                <p className="text-sm text-gray-500">Deadline: {new Date(assignment.deadline).toLocaleDateString()}</p>
+                <div className="mt-4">
+                    <input
+                        type="text"
+                        placeholder="Enter your submission link"
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                        onChange={(e) => setSubmissionLinks(prev => ({ ...prev, [assignment._id]: e.target.value }))}
+                    />
+                    <button
+                        className="bg-black text-white mt-3 px-4 py-2 rounded hover:bg-gray-800"
+                        onClick={() => handleAssignmentSubmit(assignment._id)}
+                    >
+                        Submit
+                    </button>
+                </div>
+            </div>
+        ))}
+    </div>
+)}
 
         {/* course lecture   */}
          <div className="flex flex-col md:flex-row gap-6">

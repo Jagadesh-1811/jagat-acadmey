@@ -77,10 +77,13 @@ function EditLecture() {
         </div>
 
         {/* Instruction */}
-        <div>
+        <div className='flex gap-2'>
          
           <button className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all text-sm" disabled={loading1} onClick={removeLecture}>
             {loading1?<ClipLoader size={30} color='white'/>:"Remove Lecture"}
+          </button>
+          <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all text-sm" onClick={()=>navigate(`/admin/create-assignment/${courseId}`)}>
+            Create Assignment
           </button>
         </div>
 

@@ -45,6 +45,10 @@ const courseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
         }],
+    assignments:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Assignment"
+    }],
 },{timestamps:true})
 
 const Course = mongoose.model("Course",courseSchema)

@@ -1,5 +1,73 @@
 import uploadOnCloudinary from "../configs/cloudinary.js";
 import User from "../models/userModel.js";
+import Resume from "../models/resumeModel.js";
+import Certification from "../models/certificationModel.js";
+import Grade from "../models/gradeModel.js";
+
+
+export const getResume = async (req, res) => {
+    try {
+        let resume = await Resume.findOne({ user: req.userId });
+        if (!resume) {
+            // If no resume exists, create a new one with default values
+            resume = new Resume({ user: req.userId });
+            await resume.save();
+        }
+        res.status(200).json(resume);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching resume" });
+    }
+};
+
+export const updateResume = async (req, res) => {
+    try {
+        const resume = await Resume.findOneAndUpdate(
+            { user: req.userId },
+            { ...req.body },
+            { new: true, upsert: true } // `new` returns the updated doc, `upsert` creates it if it doesn't exist
+        );
+        res.status(200).json(resume);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error updating resume" });
+    }
+};
+
+export const getCertifications = async (req, res) => {
+    try {
+        const certifications = await Certification.find({ user: req.userId });
+        res.status(200).json(certifications);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching certifications" });
+    }
+};
+
+export const submitCertification = async (req, res) => {
+    try {
+        const newCertification = new Certification({
+            ...req.body,
+            user: req.userId
+        });
+        await newCertification.save();
+        res.status(201).json(newCertification);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error submitting certification" });
+    }
+};
+
+export const getGrades = async (req, res) => {
+    try {
+        const grades = await Grade.find({ user: req.userId });
+        res.status(200).json(grades);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching grades" });
+    }
+};
+
 
 export const getCurrentUser = async (req,res) => {
     try {

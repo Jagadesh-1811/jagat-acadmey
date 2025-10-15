@@ -1,13 +1,43 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector } from "react-redux";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import img from "../../assets/empty.jpg"; // fallback photo
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
+import axios from 'axios';
+import { serverUrl } from '../../App';
+
 function Dashboard() {
   const navigate = useNavigate()
   const { userData } = useSelector((state) => state.user);
   const { creatorCourseData } = useSelector((state) => state.course);
+  const [submissions, setSubmissions] = useState({});
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+        try {
+            const newSubmissions = {};
+            for (const course of creatorCourseData) {
+                for (const assignment of course.assignments) {
+                    const { data } = await axios.get(
+                        `${serverUrl}/api/submission/${assignment._id}`,
+                        { withCredentials: true }
+                    );
+                    newSubmissions[assignment._id] = data.submissions;
+                }
+            }
+            setSubmissions(newSubmissions);
+        } catch (error) {
+            console.error("Error fetching submissions:", error);
+        }
+    };
+
+    if (creatorCourseData) {
+        fetchSubmissions();
+    }
+}, [creatorCourseData]);
+
+
   // update based on your store
 
   // Sample data - Replace with real API/course data
@@ -81,6 +111,30 @@ function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
+
+        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6 mt-8">
+    <h2 className="text-xl font-bold mb-4">Assignment Submissions</h2>
+    {creatorCourseData?.map((course) => (
+        <div key={course._id} className="mb-8">
+            <h3 className="text-lg font-semibold mb-2">{course.title}</h3>
+            {course.assignments?.map((assignment) => (
+                <div key={assignment._id} className="border p-4 rounded-lg mb-4">
+                    <h4 className="text-md font-semibold">{assignment.title}</h4>
+                    <ul className="list-disc pl-6 mt-2">
+                        {submissions[assignment._id]?.map((submission) => (
+                            <li key={submission._id} className="text-sm">
+                                <span className="font-semibold">{submission.student.name}: </span>
+                                <a href={submission.submissionLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                    {submission.submissionLink}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
+        </div>
+    ))}
+</div>
       </div>
     </div>
   )
